@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour
     public float fallGravityModifier = 3f;
     public bool isOnGround = true;
     public bool gameOver = false;
-    private bool canDoubleJump = true;
+    public bool canDoubleJump = false;
     private GameManager gameManager;
 
 
@@ -18,7 +18,6 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
-
         Physics.gravity *= jumpGravityModifier;
     }
 
@@ -29,44 +28,55 @@ public class PlayerController : MonoBehaviour
         {
             playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isOnGround = false;
-        } else if (Input.GetKeyDown(KeyCode.Space) && canDoubleJump && !gameOver) {
+        }
+        else if (Input.GetKeyDown(KeyCode.Space) && canDoubleJump && !gameOver)
+        {
             playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             canDoubleJump = false;
         }
-
-        if (playerRb.velocity.y < 0) {
+        if (playerRb.velocity.y < 0)
+        {
             playerRb.velocity += new Vector3(0, Physics.gravity.y * (jumpGravityModifier - 2) * Time.deltaTime, 0);
-        } else if (playerRb.velocity.y > 0 && !Input.GetKey(KeyCode.Space)) {
+        }
+        else if (playerRb.velocity.y > 0 && !Input.GetKey(KeyCode.Space))
+        {
             playerRb.velocity += new Vector3(0, Physics.gravity.y * (fallGravityModifier - 2) * Time.deltaTime, 0);
         }
     }
 
-    private void OnCollisionEnter(Collision collision) 
+    private void OnCollisionEnter(Collision collision)
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        if (gameManager.isGameActive) {
-            if (collision.gameObject.CompareTag("StartingPlatform") && collision.contacts[0].normal.x >= 0) {
+        if (gameManager.isGameActive)
+        {
+            if (collision.gameObject.CompareTag("StartingPlatform") && collision.contacts[0].normal.x >= 0)
+            {
                 isOnGround = true;
                 Destroy(collision.gameObject, 6f);
-            } else if (collision.gameObject.CompareTag("Platform") && collision.contacts[0].normal.x >= 0) {
+            }
+            else if (collision.gameObject.CompareTag("Platform") && collision.contacts[0].normal.x >= 0)
+            {
                 isOnGround = true;
-                canDoubleJump = true;
                 Destroy(collision.gameObject, 2f);
-            } else if (collision.contacts[0].normal.x < 0) {
+            }
+            else if (collision.contacts[0].normal.x < 0)
+            {
                 gameManager.GameOver();
                 gameOver = true;
                 Debug.Log("Game Over - Collisione dal lato sinistro del cubo");
-            } else {
+            }
+            else
+            {
                 isOnGround = false;
             }
         }
     }
 
-    private void OnCollisionExit(Collision collision) 
+    private void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Platform"))
+        if (collision.gameObject.CompareTag("Platform") || collision.gameObject.CompareTag("StartingPlatform"))
         {
             isOnGround = false;
-        } 
+        }
     }
 }
