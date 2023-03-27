@@ -704,7 +704,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &258746522
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1129,9 +1129,8 @@ MonoBehaviour:
   jumpForce: 1200
   jumpGravityModifier: 4
   fallGravityModifier: 3
+  canDoubleJump: 1
   isOnGround: 1
-  gameOver: 0
-  canDoubleJump: 0
 --- !u!54 &459902713
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1511,13 +1510,15 @@ MonoBehaviour:
   powerUpsPrefabs:
   - {fileID: 546643280516847441, guid: e7178bc8a2e417945a72baaa9f4eeaa5, type: 3}
   player: {fileID: 459902711}
-  scoreText: {fileID: 443125551}
   gameOverScreen: {fileID: 1916408459}
   restartButton: {fileID: 1271180015}
+  scoreText: {fileID: 443125551}
+  powerUpText: {fileID: 258746523}
   platformSpawnRate: 1
-  powerUpSpawnRate: 10
-  isGameActive: 0
+  powerUpSpawnRate: 5
   speed: 23
+  isGameActive: 0
+  powerUpCount: 3
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,8 +12,6 @@ public class PlayerController : MonoBehaviour
     public bool isOnGround = true;
     private GameManager gameManager;
 
-
-    // Start is called before the first frame update
     void Start()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -22,7 +20,6 @@ public class PlayerController : MonoBehaviour
         Physics.gravity *= jumpGravityModifier;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space) && (isOnGround || (canDoubleJump && gameManager.powerUpCount != 0)) && gameManager.isGameActive)
@@ -33,19 +30,21 @@ public class PlayerController : MonoBehaviour
                 canDoubleJump = false;
                 gameManager.UpdatePowerUpCount(--gameManager.powerUpCount);
             }
-            
+
             playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isOnGround = false;
         }
 
+        // gravity push while jumping
         if (playerRb.velocity.y < 0)
         {
             playerRb.velocity += Vector3.up * Physics.gravity.y * (jumpGravityModifier - 1) * Time.deltaTime;
-        }
+        } 
+        // gravity push when stop jumping
         else if (playerRb.velocity.y > 0 && !Input.GetKey(KeyCode.Space))
         {
             playerRb.velocity += Vector3.up * Physics.gravity.y * (fallGravityModifier - 1) * Time.deltaTime;
-        }
+        } 
     }
 
     private void OnCollisionEnter(Collision collision)
