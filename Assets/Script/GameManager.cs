@@ -10,14 +10,16 @@ public class GameManager : MonoBehaviour
     public List<GameObject> platformPrefabs;
     public List<GameObject> powerUpsPrefabs;
     public GameObject player;
-    public TextMeshProUGUI scoreText;
     public GameObject gameOverScreen;
     public Button restartButton;
+    public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI powerUpText;
     public float platformSpawnRate = 1f;
     public float powerUpSpawnRate = 15f;
+    public float speed = 23f;
     public bool isGameActive;
+    public int powerUpCount = 3;
     private int score;
-    public float speed = 23;
 
     public void StartGame()
     {
@@ -33,6 +35,11 @@ public class GameManager : MonoBehaviour
         {
             player.transform.Translate(Vector3.right * Time.deltaTime * speed);
             UpdateScore();
+            UpdatePowerUpCount(powerUpCount);
+            if (player.transform.position.y < -8)
+            {
+                GameOver();
+            }
         }
     }
 
@@ -77,6 +84,11 @@ public class GameManager : MonoBehaviour
     {
         score = (int)player.transform.position.x;
         scoreText.text = "Distance: " + score;
+    }
+
+    public void UpdatePowerUpCount(int powerUpCount)
+    {
+        powerUpText.text = "Double Jumps: " + powerUpCount;
     }
 
     public void GameOver()

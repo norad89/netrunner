@@ -270,7 +270,6 @@ GameObject:
   - component: {fileID: 36025444}
   - component: {fileID: 36025443}
   - component: {fileID: 36025442}
-  - component: {fileID: 36025445}
   m_Layer: 5
   m_Name: New Game Button
   m_TagString: Untagged
@@ -381,20 +380,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 36025440}
   m_CullTransparentMesh: 1
---- !u!114 &36025445
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 36025440}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 398c6ef216bd627469d854e12582880d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  titleScreen: {fileID: 0}
-  difficulty: 1
 --- !u!1 &42678290
 GameObject:
   m_ObjectHideFlags: 0
@@ -1528,12 +1513,11 @@ MonoBehaviour:
   player: {fileID: 459902711}
   scoreText: {fileID: 443125551}
   gameOverScreen: {fileID: 1916408459}
-  selectDifficulty: {fileID: 2033147633}
   restartButton: {fileID: 1271180015}
   platformSpawnRate: 1
   powerUpSpawnRate: 10
   isGameActive: 0
-  speed: 0
+  speed: 23
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
