@@ -50,13 +50,13 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(platformSpawnRate);
 
             // Check distance reached from first platform
-            if (player.transform.position.x > 45f)
+            if (player.transform.position.x > 35f)
             {
                 // Choose a random groundprefab
                 int index = Random.Range(0, platformPrefabs.Count);
 
                 // Create a random offset for platform spawning and spawn platforms to the right of the player
-                Vector3 randomOffset = new Vector3(Random.Range(2.5f, 6.0f), Random.Range(-7.0f, -2), 0);
+                Vector3 randomOffset = new Vector3(Random.Range(5.0f, 10.0f), Random.Range(-7.0f, -2), 0);
                 Vector3 spawnPos = new Vector3(player.transform.position.x, 0f, 0f) + new Vector3(20f, 0f, 0f) + randomOffset;
                 GameObject nextPlatform = Instantiate(platformPrefabs[index], spawnPos, platformPrefabs[index].transform.rotation);
             }
