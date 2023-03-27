@@ -5,12 +5,15 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody playerRb;
-    public float jumpForce = 10;
+    public float jumpForce = 1200;
     public float jumpGravityModifier;
     public float fallGravityModifier = 3f;
     public bool isOnGround = true;
     public bool gameOver = false;
     private bool canDoubleJump = true;
+    private GameManager gameManager;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -40,20 +43,28 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision) 
     {
-        
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            canDoubleJump = true;
-            isOnGround = true;
-
-        } else {
-            isOnGround = false;
-        } 
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        if (gameManager.isGameActive) {
+            if (collision.gameObject.CompareTag("StartingPlatform") && collision.contacts[0].normal.x >= 0) {
+                isOnGround = true;
+                Destroy(collision.gameObject, 6f);
+            } else if (collision.gameObject.CompareTag("Platform") && collision.contacts[0].normal.x >= 0) {
+                isOnGround = true;
+                canDoubleJump = true;
+                Destroy(collision.gameObject, 2f);
+            } else if (collision.contacts[0].normal.x < 0) {
+                gameManager.GameOver();
+                gameOver = true;
+                Debug.Log("Game Over - Collisione dal lato sinistro del cubo");
+            } else {
+                isOnGround = false;
+            }
+        }
     }
 
     private void OnCollisionExit(Collision collision) 
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Platform"))
         {
             isOnGround = false;
         } 

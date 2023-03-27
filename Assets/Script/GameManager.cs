@@ -1,22 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public List<GameObject> platformPrefabs; // list of platform prefabs
-    public GameObject player; // player reference
-    public float spawnRate = 1f; // platform spawn frequency
-    private bool isGameActive = true; // active game flag
-    private float speed = 23; // game speed
+    public List<GameObject> platformPrefabs;
+    public GameObject player;
+    public TextMeshProUGUI scoreText;
+    public GameObject gameOverScreen;
+    public GameObject titleScreen;
+    public Button restartButton;
+    public float spawnRate = 1f;
+    public bool isGameActive;
+    private int score;
+    private float speed = 23;
 
     void Start()
     {
-        StartGame();
+
     }
 
     void Update() {
-        player.transform.Translate(Vector3.right * Time.deltaTime * speed);
+        if(isGameActive) {
+            player.transform.Translate(Vector3.right * Time.deltaTime * speed);
+            UpdateScore();   
+        }
     }
 
     // Funzione per il controllo della generazione dei target
@@ -41,22 +52,29 @@ public class GameManager : MonoBehaviour
                 // Genera il target a destra del giocatore
                 GameObject nextPlatform = Instantiate(platformPrefabs[index], spawnPos, platformPrefabs[index].transform.rotation);
                 
-                Destroy(nextPlatform, 2f);
             }
         }
     }
+    public void UpdateScore() {
+        score = (int)player.transform.position.x;
+        scoreText.text = "Distance: " + score;
+    }
 
-    // Funzione per il controllo della fine del gioco
-    public void GameOver()
-    {
+    public void GameOver() {
+        gameOverScreen.gameObject.SetActive(true);
         isGameActive = false;
     }
 
-    // Funzione per l'avvio del gioco
-    public void StartGame()
+    public void RestartGame() {
+        Physics.gravity = new Vector3(0, -9.8f, 0);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void StartGame(int difficulty)
     {
-        // Start spawning platforms
-        StartCoroutine(SpawnGround());   
-        // Starts player movement
+        isGameActive = true;
+        score = 0;
+        StartCoroutine(SpawnGround());
+        titleScreen.gameObject.SetActive(false);
     }
 }
