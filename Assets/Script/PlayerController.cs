@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
     public float jumpForce = 1200;
     public float jumpGravityModifier;
     public float fallGravityModifier = 3f;
-    public bool doubleJumpTrigger = true;
+    public bool canDoubleJump = true;
     public bool isOnGround = true;
     private GameManager gameManager;
 
@@ -25,42 +25,44 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && isOnGround && gameManager.isGameActive)
+        if (Input.GetKeyDown(KeyCode.Space) && (isOnGround || (canDoubleJump && gameManager.powerUpCount != 0)) && gameManager.isGameActive)
         {
+            if (!isOnGround)
+            {
+                playerRb.velocity = new Vector3(playerRb.velocity.x, 0, playerRb.velocity.z);
+                canDoubleJump = false;
+                gameManager.UpdatePowerUpCount(--gameManager.powerUpCount);
+            }
+            
             playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isOnGround = false;
         }
-        else if (Input.GetKeyDown(KeyCode.Space) && gameManager.isGameActive && gameManager.powerUpCount != 0 && doubleJumpTrigger)
-        {
-            playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-            doubleJumpTrigger = false;
-            gameManager.UpdatePowerUpCount(gameManager.powerUpCount--);
-        }
+
         if (playerRb.velocity.y < 0)
         {
-            playerRb.velocity += new Vector3(0, Physics.gravity.y * (jumpGravityModifier - 2) * Time.deltaTime, 0);
+            playerRb.velocity += Vector3.up * Physics.gravity.y * (jumpGravityModifier - 1) * Time.deltaTime;
         }
         else if (playerRb.velocity.y > 0 && !Input.GetKey(KeyCode.Space))
         {
-            playerRb.velocity += new Vector3(0, Physics.gravity.y * (fallGravityModifier - 2) * Time.deltaTime, 0);
+            playerRb.velocity += Vector3.up * Physics.gravity.y * (fallGravityModifier - 1) * Time.deltaTime;
         }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        
+
         if (gameManager.isGameActive)
         {
             if (collision.gameObject.CompareTag("StartingPlatform") && collision.contacts[0].normal.x >= 0)
             {
                 isOnGround = true;
-                doubleJumpTrigger = true;
+                canDoubleJump = true;
                 Destroy(collision.gameObject, 6f);
             }
             else if (collision.gameObject.CompareTag("Platform") && collision.contacts[0].normal.x >= 0)
             {
                 isOnGround = true;
-                doubleJumpTrigger = true;
+                canDoubleJump = true;
                 Destroy(collision.gameObject, 2f);
             }
             else if (collision.contacts[0].normal.x < 0)

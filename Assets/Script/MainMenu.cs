@@ -35,7 +35,7 @@ public class MainMenu : MonoBehaviour
 
     void ShowCreditsScreen()
     {
-        titleScreen.SetActive(false);
-        creditsScreen.SetActive(true);
+        //titleScreen.SetActive(false);
+        //creditsScreen.SetActive(true);
     }
 }
