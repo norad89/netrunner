@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && (isOnGround || (canDoubleJump && gameManager.powerUpCount != 0)) && gameManager.isGameActive)
+        if ((Input.GetKeyDown(KeyCode.Space) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began))  && (isOnGround || (canDoubleJump && gameManager.powerUpCount != 0)) && gameManager.isGameActive)
         {
             if (!isOnGround)
             {
@@ -41,7 +41,7 @@ public class PlayerController : MonoBehaviour
             playerRb.velocity += Vector3.up * Physics.gravity.y * (jumpGravityModifier - 1) * Time.deltaTime;
         } 
         // gravity push when stop jumping
-        else if (playerRb.velocity.y > 0 && !Input.GetKey(KeyCode.Space))
+        else if (playerRb.velocity.y > 0 && (!Input.GetKey(KeyCode.Space) || Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended))
         {
             playerRb.velocity += Vector3.up * Physics.gravity.y * (fallGravityModifier - 1) * Time.deltaTime;
         } 
