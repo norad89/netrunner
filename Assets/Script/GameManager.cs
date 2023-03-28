@@ -84,9 +84,9 @@ public class GameManager : MonoBehaviour
                 // Update previous platform position based on the size of the platform that just spawned  
                 previousPlatformPosition = new Vector3(nextPlatform.transform.position.x + nextPlatform.GetComponent<Renderer>().bounds.size.x / 2, 0f, 0f);
 
-                Vector3 randomPowerUpOffset = new Vector3(Random.Range(-5.0f, 15.0f), Random.Range(15.0f, 11.0f), 0);
                 if (powerUpSpawnRate >= 80)
                 {
+                    Vector3 randomPowerUpOffset = new Vector3(Random.Range(-5.0f, 15.0f), Random.Range(15.0f, 11.0f), 0);
                     GameObject powerUp = Instantiate(powerUpsPrefabs[0], spawnPos + randomPowerUpOffset, powerUpsPrefabs[0].transform.rotation);
                     if (powerUp.transform.position.x < player.transform.position.x)
                     {
