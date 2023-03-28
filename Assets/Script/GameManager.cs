@@ -92,14 +92,9 @@ public class GameManager : MonoBehaviour
                 {
                     Vector3 randomPowerUpOffset = new Vector3(Random.Range(minSpawnOffsetX, maxSpawnOffsetX), Random.Range(15.0f, 11.0f), 0);
                     GameObject powerUp = Instantiate(powerUpsPrefabs[0], spawnPos + randomPowerUpOffset, powerUpsPrefabs[0].transform.rotation);
-                    if (powerUp.transform.position.x < player.transform.position.x)
-                    {
-                        Destroy(powerUp, 2f);
-                    }
                 }
             }
         }
-
     }
 
     public void UpdateDifficulty(int difficulty)
