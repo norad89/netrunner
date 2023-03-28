@@ -56,13 +56,11 @@ public class PlayerController : MonoBehaviour
             {
                 isOnGround = true;
                 canDoubleJump = true;
-                Destroy(collision.gameObject, 6f);
             }
             else if (collision.gameObject.CompareTag("Platform") && collision.contacts[0].normal.x >= 0)
             {
                 isOnGround = true;
                 canDoubleJump = true;
-                Destroy(collision.gameObject, 2f);
             }
             else if (collision.contacts[0].normal.x < 0)
             {

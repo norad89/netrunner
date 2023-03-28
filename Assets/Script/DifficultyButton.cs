@@ -29,6 +29,6 @@ public class DifficultyButton : MonoBehaviour
     {
         transform.parent.gameObject.SetActive(false);
         titleScreen.SetActive(true);
-        gameManager.speed = difficulty;
+        gameManager.UpdateDifficulty(difficulty);
     }
 }
