@@ -303,8 +303,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88971fda13db50a4196f5679c3405c81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  backgroundPrefab: {fileID: 0}
-  backgroundWidth: 700
+  backGroundPrefab: {fileID: 8605001464275389636}
 --- !u!1 &8605001464460564103
 GameObject:
   m_ObjectHideFlags: 0
