@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1604,9 +1604,11 @@ MonoBehaviour:
   - {fileID: 6914131848378637998, guid: 6d425eb5f5db2be46bafe990d7c01870, type: 3}
   - {fileID: 6914131848378637998, guid: 6cfeb8a754da63a41b1a64894b089575, type: 3}
   - {fileID: 6914131848378637998, guid: 625f94780846f8c449cce9174f1d693c, type: 3}
+  - {fileID: 6914131848378637998, guid: b6728c051989fbe4da47a5d5f70587f8, type: 3}
   powerUpsPrefabs:
   - {fileID: 546643280516847441, guid: e7178bc8a2e417945a72baaa9f4eeaa5, type: 3}
   player: {fileID: 459902711}
+  startingPlatform: {fileID: 1906552627}
   gameOverScreen: {fileID: 1916408459}
   restartButton: {fileID: 1271180015}
   scoreText: {fileID: 443125551}
@@ -1614,6 +1616,7 @@ MonoBehaviour:
   platformSpawnRate: 1
   powerUpSpawnRate: 5
   speed: 23
+  initialSpawnPositionX: 60
   isGameActive: 0
   powerUpCount: 3
 --- !u!1 &705507993
@@ -3439,8 +3442,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1906552627}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 27, y: -3.5, z: 0}
-  m_LocalScale: {x: 70, y: 6, z: 4}
+  m_LocalPosition: {x: 27, y: -10.5, z: 0}
+  m_LocalScale: {x: 70, y: 20, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

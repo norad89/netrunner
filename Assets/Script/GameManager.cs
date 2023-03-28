@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject> platformPrefabs;
     public List<GameObject> powerUpsPrefabs;
     public GameObject player;
+    public GameObject startingPlatform;
     public GameObject gameOverScreen;
     public Button restartButton;
     public TextMeshProUGUI scoreText;
@@ -17,8 +18,10 @@ public class GameManager : MonoBehaviour
     public float platformSpawnRate = 1f;
     public float powerUpSpawnRate = 15f;
     public float speed = 23f;
+    public float initialSpawnPositionX = 60f;
     public bool isGameActive;
     public int powerUpCount = 3;
+    private bool isFirstSpawn = true;
     private int score;
 
     public void StartGame()
@@ -45,22 +48,37 @@ public class GameManager : MonoBehaviour
 
     IEnumerator SpawnPlatforms()
     {
+        // Initial platform spawn position
+        Vector3 previousPlatformPosition = new Vector3(initialSpawnPositionX, 0f, 0f);
+
         while (isGameActive)
         {
             yield return new WaitForSeconds(platformSpawnRate);
 
-            // Check distance reached from first platform
-            if (player.transform.position.x > 35f)
+            int index;
+            // Choose a random platform unless it's first spawn
+            if (isFirstSpawn)
             {
-                // Choose a random groundprefab
-                int index = Random.Range(0, platformPrefabs.Count);
-
-                // Create a random offset for platform spawning and spawn platforms to the right of the player
-                Vector3 randomOffset = new Vector3(Random.Range(5.0f, 10.0f), Random.Range(-7.0f, -2), 0);
-                Vector3 spawnPos = new Vector3(player.transform.position.x, 0f, 0f) + new Vector3(20f, 0f, 0f) + randomOffset;
-                GameObject nextPlatform = Instantiate(platformPrefabs[index], spawnPos, platformPrefabs[index].transform.rotation);
+                index = 2;
+                isFirstSpawn = false;
             }
+            else
+            {
+                index = Random.Range(0, platformPrefabs.Count);
+            }
+
+            // Get next platform size
+            float prefabSizeX = platformPrefabs[index].GetComponent<Renderer>().bounds.size.x;
+            // Creates random offset
+            Vector3 randomOffset = new Vector3(Random.Range(5.0f, 15.0f), Random.Range(-12.0f, -6.0f), 0);
+            // Define actual spawn position based on previous platform position
+            Vector3 spawnPos = previousPlatformPosition + new Vector3(prefabSizeX / 2, 0f, 0f) + randomOffset;
+            // Instantiate new platform
+            GameObject nextPlatform = Instantiate(platformPrefabs[index], spawnPos, platformPrefabs[index].transform.rotation);
+            // Update previous platform position based on the size of the platform that just spawned  
+            previousPlatformPosition = new Vector3(nextPlatform.transform.position.x + nextPlatform.GetComponent<Renderer>().bounds.size.x / 2, 0f, 0f);
         }
+
     }
 
     IEnumerator SpawnPowerUps()
