@@ -1613,7 +1613,7 @@ MonoBehaviour:
   restartButton: {fileID: 1271180015}
   scoreText: {fileID: 443125551}
   powerUpText: {fileID: 258746523}
-  platformSpawnRate: 1
+  platformSpawnRate: 1.1
   powerUpSpawnRate: 5
   speed: 23
   initialSpawnPositionX: 60

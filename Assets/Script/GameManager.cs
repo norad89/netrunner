@@ -28,8 +28,7 @@ public class GameManager : MonoBehaviour
     {
         isGameActive = true;
         score = 0;
-        StartCoroutine(SpawnPlatforms());
-        StartCoroutine(SpawnPowerUps());
+        StartCoroutine(SpawnManager());
     }
 
     void Update()
@@ -46,7 +45,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    IEnumerator SpawnPlatforms()
+    IEnumerator SpawnManager()
     {
         // Initial platform spawn position
         Vector3 previousPlatformPosition = new Vector3(initialSpawnPositionX, 0f, 0f);
@@ -56,46 +55,47 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(platformSpawnRate);
 
             int index;
+            int powerUpSpawnRate;
             // Choose a random platform unless it's first spawn
             if (isFirstSpawn)
             {
+                powerUpSpawnRate = 0;
                 index = 2;
                 isFirstSpawn = false;
             }
             else
             {
                 index = Random.Range(0, platformPrefabs.Count);
+                powerUpSpawnRate = Random.Range(0, 99);
             }
 
-            // Get next platform size
-            float prefabSizeX = platformPrefabs[index].GetComponent<Renderer>().bounds.size.x;
-            // Creates random offset
-            Vector3 randomOffset = new Vector3(Random.Range(5.0f, 15.0f), Random.Range(-12.0f, -6.0f), 0);
-            // Define actual spawn position based on previous platform position
-            Vector3 spawnPos = previousPlatformPosition + new Vector3(prefabSizeX / 2, 0f, 0f) + randomOffset;
-            // Instantiate new platform
-            GameObject nextPlatform = Instantiate(platformPrefabs[index], spawnPos, platformPrefabs[index].transform.rotation);
-            // Update previous platform position based on the size of the platform that just spawned  
-            previousPlatformPosition = new Vector3(nextPlatform.transform.position.x + nextPlatform.GetComponent<Renderer>().bounds.size.x / 2, 0f, 0f);
-        }
-
-    }
-
-    IEnumerator SpawnPowerUps()
-    {
-        while (isGameActive)
-        {
-            yield return new WaitForSeconds(powerUpSpawnRate);
-
-            // Check distance reached from first platform
-            if (player.transform.position.x > 45f)
+            GameObject[] platforms = GameObject.FindGameObjectsWithTag("Platform");
+            int platformCount = platforms.Length;
+            if (platformCount < 4)
             {
-                // Create a random offset for platform spawning and spawn platforms to the right of the player
-                Vector3 randomOffset = new Vector3(Random.Range(2.5f, 6.0f), Random.Range(-7.0f, -2), 0);
-                Vector3 spawnPos = new Vector3(player.transform.position.x, 0f, 0f) + new Vector3(20f, 6f, 0f) + randomOffset;
-                GameObject powerUp = Instantiate(powerUpsPrefabs[0], spawnPos, powerUpsPrefabs[0].transform.rotation);
+                // Get next platform size
+                float prefabSizeX = platformPrefabs[index].GetComponent<Renderer>().bounds.size.x;
+                // Creates random offset
+                Vector3 randomOffset = new Vector3(Random.Range(5.0f, 15.0f), Random.Range(-12.0f, -6.0f), 0);
+                // Define actual spawn position based on previous platform position
+                Vector3 spawnPos = previousPlatformPosition + new Vector3(prefabSizeX / 2, 0f, 0f) + randomOffset;
+                // Instantiate new platform
+                GameObject nextPlatform = Instantiate(platformPrefabs[index], spawnPos, platformPrefabs[index].transform.rotation);
+                // Update previous platform position based on the size of the platform that just spawned  
+                previousPlatformPosition = new Vector3(nextPlatform.transform.position.x + nextPlatform.GetComponent<Renderer>().bounds.size.x / 2, 0f, 0f);
+
+                Vector3 randomPowerUpOffset = new Vector3(Random.Range(-5.0f, 15.0f), Random.Range(15.0f, 11.0f), 0);
+                if (powerUpSpawnRate >= 80)
+                {
+                    GameObject powerUp = Instantiate(powerUpsPrefabs[0], spawnPos + randomPowerUpOffset, powerUpsPrefabs[0].transform.rotation);
+                    if (powerUp.transform.position.x < player.transform.position.x)
+                    {
+                        Destroy(powerUp, 2f);
+                    }
+                }
             }
         }
+
     }
 
     public void UpdateScore()
