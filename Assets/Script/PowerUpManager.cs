@@ -26,8 +26,8 @@ public class PowerUpManager : MonoBehaviour
             {
                 if (gameManager.powerUpCount < 3)
                 {
-                    gameManager.powerUpCount = gameManager.powerUpCount++;
-                    gameManager.UpdatePowerUpCount(gameManager.powerUpCount++);
+                    gameManager.powerUpCount = gameManager.powerUpCount++;            
+                    UIMainScene.Instance.UpdatePowerUpCount(gameManager.powerUpCount++);
                 }
                 Destroy(gameObject);
             }

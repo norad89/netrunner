@@ -1,21 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Text;
 using TMPro;
+using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance;
+
     public List<GameObject> platformPrefabs;
     public List<GameObject> powerUpsPrefabs;
     public GameObject player;
     public GameObject startingPlatform;
-    public GameObject gameOverScreen;
-    public Button restartButton;
-    public TextMeshProUGUI scoreText;
-    public TextMeshProUGUI powerUpText;
-    public TextMeshProUGUI difficultyText;
     public float platformSpawnRate = 0.8f;
     public float speed = 23f;
     public float initialSpawnPositionX = 60f;
@@ -26,26 +25,52 @@ public class GameManager : MonoBehaviour
     public int difficulty = 2;
     public int powerUpSpawnRate = 10;
     private bool isFirstSpawn = true;
+    private bool isSpawningStarted = false;
+    public bool gameOverBool;
     private int score;
+    public int highScore;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     public void StartGame()
     {
-        isGameActive = true;
+        powerUpCount = 3;
         score = 0;
-        StartCoroutine(SpawnManager());
+        UpdateDifficulty(difficulty);
+        isGameActive = true;
+        isSpawningStarted = true;
     }
 
     void Update()
     {
-        if (isGameActive)
+        if (isGameActive && player)
         {
+            score = (int)player.transform.position.x;
+            UIMainScene.Instance.UpdateDifficultyText(difficulty);
+            UIMainScene.Instance.UpdateScore(score);
+            UIMainScene.Instance.UpdatePowerUpCount(powerUpCount);
             player.transform.Translate(Vector3.right * Time.deltaTime * speed);
-            UpdateScore();
-            UpdatePowerUpCount(powerUpCount);
-            if (player.transform.position.y < -8)
+            if (player.transform.position.y < -8 && !gameOverBool)
             {
                 GameOver();
             }
+        }
+
+        if (isSpawningStarted)
+        {
+            StartCoroutine(SpawnManager());
+            isSpawningStarted = false;
         }
     }
 
@@ -107,7 +132,6 @@ public class GameManager : MonoBehaviour
                 powerUpSpawnRate = 20;
                 platformSpawnRate = 1f;
                 speed = 20;
-                difficultyText.text = "Difficulty: Easy";
                 break;
 
             case 2:
@@ -116,7 +140,6 @@ public class GameManager : MonoBehaviour
                 powerUpSpawnRate = 10;
                 platformSpawnRate = 0.8f;
                 speed = 23;
-                difficultyText.text = "Difficulty: Medium";
                 break;
 
             case 3:
@@ -125,31 +148,96 @@ public class GameManager : MonoBehaviour
                 powerUpSpawnRate = 5;
                 platformSpawnRate = 0.6f;
                 speed = 30;
-                difficultyText.text = "Difficulty: Hard";
                 break;
         }
     }
 
-    public void UpdateScore()
+    [System.Serializable]
+    public class SaveData
     {
-        score = (int)player.transform.position.x;
-        scoreText.text = "Distance: " + score;
+        public int HighScore;
     }
 
-    public void UpdatePowerUpCount(int powerUpCount)
+    public void SaveHighScore()
     {
-        powerUpText.text = "Double Jumps: " + powerUpCount;
+        string path = "/idbfs/builds-j7-7/savefile.json";
+
+        // Creare un nuovo oggetto SaveData con l'high score corrente
+        SaveData data = new SaveData();
+        data.HighScore = score;
+
+        // Convertire l'oggetto SaveData in formato JSON
+        string json = JsonUtility.ToJson(data);
+
+        // Salvare il file JSON nel percorso persistente specifico per la build WebGL
+        StartCoroutine(SaveFile(path, json));
+    }
+
+    private IEnumerator SaveFile(string path, string json)
+    {
+        // Creare una richiesta HTTP POST per salvare il file
+        byte[] bytes = Encoding.UTF8.GetBytes(json);
+        UnityWebRequest www = UnityWebRequest.Put(path, bytes);
+        www.method = UnityWebRequest.kHttpVerbPUT;
+
+        // Attendere la fine della richiesta
+        yield return www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            // Gestire l'errore di salvataggio del file
+            Debug.LogError("Errore durante il salvataggio del file: " + www.error);
+        }
+    }
+
+    public void LoadHighScore()
+    {
+        string path = "/idbfs/builds-j7-7/savefile.json";
+
+        // Caricare il file JSON dal percorso persistente specifico per la build WebGL
+        StartCoroutine(LoadFile(path));
+    }
+
+    private IEnumerator LoadFile(string path)
+    {
+        // Creare una richiesta HTTP GET per caricare il file
+        UnityWebRequest www = UnityWebRequest.Get(path);
+
+        // Attendere la fine della richiesta
+        yield return www.SendWebRequest();
+
+        if (www.result == UnityWebRequest.Result.Success)
+        {
+            // Convertire il contenuto del file in una stringa JSON
+            string json = www.downloadHandler.text;
+
+            // Convertire il JSON in un oggetto SaveData
+            SaveData data = JsonUtility.FromJson<SaveData>(json);
+
+            // Controllare se l'high score caricato è maggiore di quello attuale
+            if (data.HighScore > score)
+            {
+                // Se l'high score caricato è maggiore, assegnarlo a score
+                UIMainScene.Instance.UpdateHighScore(data.HighScore);
+            }
+        }
+        else
+        {
+            // Gestire l'errore di caricamento del file
+            Debug.LogError("Errore durante il caricamento del file: " + www.error);
+        }
     }
 
     public void GameOver()
     {
-        gameOverScreen.gameObject.SetActive(true);
         isGameActive = false;
-    }
-
-    public void RestartGame()
-    {
-        Physics.gravity = new Vector3(0, -9.8f, 0);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        isSpawningStarted = false;
+        UIMainScene.Instance.ShowGameOverScreen();
+        if (score > highScore)
+        {
+            int newHighScore = score;
+            SaveHighScore();
+            UIMainScene.Instance.UpdateHighScore(newHighScore);
+        }
     }
 }
