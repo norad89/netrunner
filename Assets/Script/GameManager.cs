@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -160,7 +161,8 @@ public class GameManager : MonoBehaviour
 
     public void SaveHighScore()
     {
-        string path = "/idbfs/builds-j7-7/savefile.json";
+        string fileName = "savefile.json";
+        string path = Path.Combine(Application.persistentDataPath, fileName);
 
         // Creare un nuovo oggetto SaveData con l'high score corrente
         SaveData data = new SaveData();
@@ -177,8 +179,13 @@ public class GameManager : MonoBehaviour
     {
         // Creare una richiesta HTTP POST per salvare il file
         byte[] bytes = Encoding.UTF8.GetBytes(json);
-        UnityWebRequest www = UnityWebRequest.Put(path, bytes);
-        www.method = UnityWebRequest.kHttpVerbPUT;
+        UnityWebRequest www = UnityWebRequest.Post(path, json);
+
+        // Impostare il contenuto del messaggio come JSON
+        www.SetRequestHeader("Content-Type", "application/json");
+
+        // Allegare i dati JSON alla richiesta
+        www.uploadHandler = new UploadHandlerRaw(bytes);
 
         // Attendere la fine della richiesta
         yield return www.SendWebRequest();
@@ -192,7 +199,8 @@ public class GameManager : MonoBehaviour
 
     public void LoadHighScore()
     {
-        string path = "/idbfs/builds-j7-7/savefile.json";
+        string fileName = "savefile.json";
+        string path = Path.Combine(Application.persistentDataPath, fileName);
 
         // Caricare il file JSON dal percorso persistente specifico per la build WebGL
         StartCoroutine(LoadFile(path));
