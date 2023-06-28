@@ -6,7 +6,7 @@ public class InfiniteBackground : MonoBehaviour
 {
     public GameObject backGroundPrefab;
     private GameObject player;
-    private float backgroundWidth = 552.5f;
+    private float backgroundWidth;
     private bool backgroundSpawned;
 
     // Start is called before the first frame update
@@ -14,6 +14,7 @@ public class InfiniteBackground : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player");
         backgroundSpawned = false;
+        backgroundWidth = backGroundPrefab.GetComponent<BoxCollider>().size.x;
     }
 
     void Update()
