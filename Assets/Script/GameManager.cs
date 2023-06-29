@@ -172,29 +172,38 @@ public class GameManager : MonoBehaviour
         string json = JsonUtility.ToJson(data);
 
         // Salvare il file JSON nel percorso persistente specifico per la build WebGL
-        StartCoroutine(SaveFile(path, json));
+        // StartCoroutine(SaveFile(path, json));
+        SaveFile(path, json);
     }
 
-    private IEnumerator SaveFile(string path, string json)
+    private void SaveFile(string path, string json)
     {
-        // Creare una richiesta HTTP POST per salvare il file
         byte[] bytes = Encoding.UTF8.GetBytes(json);
-        UnityWebRequest www = UnityWebRequest.Post(path, json);
 
-        // Impostare il contenuto del messaggio come JSON
-        www.SetRequestHeader("Content-Type", "application/json");
-
-        // Allegare i dati JSON alla richiesta
-        www.uploadHandler = new UploadHandlerRaw(bytes);
-
-        // Attendere la fine della richiesta
-        yield return www.SendWebRequest();
-
-        if (www.result != UnityWebRequest.Result.Success)
-        {
-            // Gestire l'errore di salvataggio del file
-            Debug.LogError("Errore durante il salvataggio del file: " + www.error);
+        if (File.Exists(path)) {
+            File.WriteAllBytes(path, bytes);
         }
+        
+
+        // // Creare una richiesta HTTP POST per salvare il file
+        // byte[] bytes = Encoding.UTF8.GetBytes(json);
+        // Debug.Log(bytes);
+        // UnityWebRequest www = UnityWebRequest.Post(path, json);
+
+        // // Impostare il contenuto del messaggio come JSON
+        // www.SetRequestHeader("Content-Type", "application/json");
+
+        // // Allegare i dati JSON alla richiesta
+        // www.uploadHandler = new UploadHandlerRaw(bytes);
+
+        // // Attendere la fine della richiesta
+        // yield return www.SendWebRequest();
+
+        // if (www.result != UnityWebRequest.Result.Success)
+        // {
+        //     // Gestire l'errore di salvataggio del file
+        //     Debug.LogError("Errore durante il salvataggio del file: " + www.error);
+        // }
     }
 
     public void LoadHighScore()
@@ -202,8 +211,12 @@ public class GameManager : MonoBehaviour
         string fileName = "savefile.json";
         string path = Path.Combine(Application.persistentDataPath, fileName);
 
-        // Caricare il file JSON dal percorso persistente specifico per la build WebGL
-        StartCoroutine(LoadFile(path));
+        if (File.Exists(path)) {
+            // Caricare il file JSON dal percorso persistente specifico per la build WebGL
+            StartCoroutine(LoadFile(path));
+        } else {
+            File.Create(path);
+        }
     }
 
     private IEnumerator LoadFile(string path)
@@ -218,15 +231,16 @@ public class GameManager : MonoBehaviour
         {
             // Convertire il contenuto del file in una stringa JSON
             string json = www.downloadHandler.text;
+            if (!string.IsNullOrEmpty(json)) {
+                // Convertire il JSON in un oggetto SaveData
+                SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-            // Convertire il JSON in un oggetto SaveData
-            SaveData data = JsonUtility.FromJson<SaveData>(json);
-
-            // Controllare se l'high score caricato è maggiore di quello attuale
-            if (data.HighScore > score)
-            {
-                // Se l'high score caricato è maggiore, assegnarlo a score
-                UIMainScene.Instance.UpdateHighScore(data.HighScore);
+                // Controllare se l'high score caricato è maggiore di quello attuale
+                if (data.HighScore > score)
+                {
+                    // Se l'high score caricato è maggiore, assegnarlo a score
+                    UIMainScene.Instance.UpdateHighScore(data.HighScore);
+                }
             }
         }
         else
