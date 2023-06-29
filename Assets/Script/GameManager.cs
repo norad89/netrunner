@@ -29,7 +29,8 @@ public class GameManager : MonoBehaviour
     private bool isSpawningStarted = false;
     public bool gameOverBool;
     private int score;
-    public int highScore;
+    private int oldHighScore = 0;
+    public int newHighScore;
 
     private void Awake()
     {
@@ -79,6 +80,10 @@ public class GameManager : MonoBehaviour
     {
         // Initial platform spawn position
         Vector3 previousPlatformPosition = new Vector3(initialSpawnPositionX, 0f, 0f);
+
+        if (gameOverBool) {
+            gameOverBool = false;
+        }
 
         while (isGameActive)
         {
@@ -239,6 +244,7 @@ public class GameManager : MonoBehaviour
                 if (data.HighScore > score)
                 {
                     // Se l'high score caricato è maggiore, assegnarlo a score
+                    oldHighScore = data.HighScore;
                     UIMainScene.Instance.UpdateHighScore(data.HighScore);
                 }
             }
@@ -252,14 +258,16 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
+        gameOverBool = true;
+        newHighScore = score;
         isGameActive = false;
         isSpawningStarted = false;
         UIMainScene.Instance.ShowGameOverScreen();
-        if (score > highScore)
+        if (newHighScore > oldHighScore)
         {
-            int newHighScore = score;
             SaveHighScore();
             UIMainScene.Instance.UpdateHighScore(newHighScore);
+            oldHighScore = score;
         }
     }
 }
