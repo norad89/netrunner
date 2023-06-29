@@ -183,10 +183,10 @@ public class GameManager : MonoBehaviour
 
     private void SaveFile(string path, string json)
     {
-        byte[] bytes = Encoding.UTF8.GetBytes(json);
+        // byte[] bytes = Encoding.UTF8.GetBytes(json);
 
         if (File.Exists(path)) {
-            File.WriteAllBytes(path, bytes);
+            File.WriteAllText(path, json);
         }
         
 
@@ -218,42 +218,54 @@ public class GameManager : MonoBehaviour
 
         if (File.Exists(path)) {
             // Caricare il file JSON dal percorso persistente specifico per la build WebGL
-            StartCoroutine(LoadFile(path));
+            LoadFile(path);
         } else {
             File.Create(path);
         }
     }
 
-    private IEnumerator LoadFile(string path)
+    private void LoadFile(string path)
     {
-        // Creare una richiesta HTTP GET per caricare il file
-        UnityWebRequest www = UnityWebRequest.Get(path);
+        if (File.Exists(path)) {
+            string json = File.ReadAllText(path);
+            SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-        // Attendere la fine della richiesta
-        yield return www.SendWebRequest();
-
-        if (www.result == UnityWebRequest.Result.Success)
-        {
-            // Convertire il contenuto del file in una stringa JSON
-            string json = www.downloadHandler.text;
-            if (!string.IsNullOrEmpty(json)) {
-                // Convertire il JSON in un oggetto SaveData
-                SaveData data = JsonUtility.FromJson<SaveData>(json);
-
-                // Controllare se l'high score caricato è maggiore di quello attuale
-                if (data.HighScore > score)
-                {
-                    // Se l'high score caricato è maggiore, assegnarlo a score
-                    oldHighScore = data.HighScore;
-                    UIMainScene.Instance.UpdateHighScore(data.HighScore);
-                }
+            // Controllare se l'high score caricato è maggiore di quello attuale
+            if (data.HighScore > score)
+            {
+                // Se l'high score caricato è maggiore, assegnarlo a score
+                oldHighScore = data.HighScore;
+                UIMainScene.Instance.UpdateHighScore(data.HighScore);
             }
         }
-        else
-        {
-            // Gestire l'errore di caricamento del file
-            Debug.LogError("Errore durante il caricamento del file: " + www.error);
-        }
+        // // Creare una richiesta HTTP GET per caricare il file
+        // UnityWebRequest www = UnityWebRequest.Get(path);
+
+        // // Attendere la fine della richiesta
+        // yield return www.SendWebRequest();
+
+        // if (www.result == UnityWebRequest.Result.Success)
+        // {
+        //     // Convertire il contenuto del file in una stringa JSON
+        //     string json = www.downloadHandler.text;
+        //     if (!string.IsNullOrEmpty(json)) {
+        //         // Convertire il JSON in un oggetto SaveData
+        //         SaveData data = JsonUtility.FromJson<SaveData>(json);
+
+        //         // Controllare se l'high score caricato è maggiore di quello attuale
+        //         if (data.HighScore > score)
+        //         {
+        //             // Se l'high score caricato è maggiore, assegnarlo a score
+        //             oldHighScore = data.HighScore;
+        //             UIMainScene.Instance.UpdateHighScore(data.HighScore);
+        //         }
+        //     }
+        // }
+        // else
+        // {
+        //     // Gestire l'errore di caricamento del file
+        //     Debug.LogError("Errore durante il caricamento del file: " + www.error);
+        // }
     }
 
     public void GameOver()
