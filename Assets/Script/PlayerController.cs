@@ -10,8 +10,10 @@ public class PlayerController : MonoBehaviour
     public float jumpForce = 1200;
     public float jumpGravityModifier = 4f;
     public float fallGravityModifier = 3f;
-    public bool canDoubleJump = true;
+    public bool canUsePowerUp = true;
     public bool isOnGround = true;
+    float dashDuration = 0.25f; // Durata del dash in secondi
+    float currentDashTime = 0f; // Tempo trascorso dallo start del dash
     private GameManager gameManager;
 
 
@@ -24,6 +26,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+
         if (gameManager.playerType == "cube")
         {
             cubePlayer.SetActive(true);
@@ -35,17 +38,40 @@ public class PlayerController : MonoBehaviour
             spherePlayer.SetActive(true);
         }
 
-        if ((Input.GetKeyDown(KeyCode.Space)) && (isOnGround || (canDoubleJump && gameManager.powerUpCount != 0)) && gameManager.isGameActive)
+        if ((Input.GetKeyDown(KeyCode.Space)) && (isOnGround || (canUsePowerUp && gameManager.powerUpCount != 0)) && gameManager.isGameActive)
         {
-            if (!isOnGround)
+            if (!isOnGround && gameManager.playerType == "cube")
             {
+                // double jump
                 playerRb.velocity = new Vector3(playerRb.velocity.x, 0, playerRb.velocity.z);
-                canDoubleJump = false;
+                canUsePowerUp = false;
                 UIMainScene.Instance.UpdatePowerUpCount(--gameManager.powerUpCount);
             }
+            else if (!isOnGround && gameManager.playerType == "sphere")
+            {
+                Vector3 dashDirection = transform.right;
+                float dashForce = 1500f;
 
-            playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-            isOnGround = false;
+                // Annulla la velocità verticale corrente per evitare ulteriori salti
+                playerRb.velocity = new Vector3(playerRb.velocity.x, 0, playerRb.velocity.z);
+                playerRb.AddForce(dashDirection * dashForce, ForceMode.Impulse);
+
+                canUsePowerUp = false;
+                UIMainScene.Instance.UpdatePowerUpCount(--gameManager.powerUpCount);
+
+                // Disabilita la gravità temporaneamente durante il dash
+                playerRb.useGravity = false;
+
+                // Resetta il timer del dash
+                currentDashTime = 0f;
+            }
+
+            // manages single and double jump for cube and single jump for sphere
+            if (gameManager.playerType == "cube" || isOnGround && gameManager.playerType == "sphere")
+            {
+                playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+                isOnGround = false;
+            }
         }
 
         // gravity push while jumping
@@ -58,6 +84,19 @@ public class PlayerController : MonoBehaviour
         {
             playerRb.velocity += Vector3.up * Physics.gravity.y * (fallGravityModifier - 1) * Time.deltaTime;
         }
+
+        if (!isOnGround && gameManager.playerType == "sphere")
+        {
+            // Incrementa il timer del dash
+            currentDashTime += Time.deltaTime;
+
+            // Se il timer supera la durata del dash, riattiva la gravità
+            if (currentDashTime >= dashDuration)
+            {
+                playerRb.useGravity = true;
+            }
+        }
+
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -68,12 +107,12 @@ public class PlayerController : MonoBehaviour
             if (collision.gameObject.CompareTag("StartingPlatform") && collision.contacts[0].normal.x >= 0)
             {
                 isOnGround = true;
-                canDoubleJump = true;
+                canUsePowerUp = true;
             }
             else if (collision.gameObject.CompareTag("Platform") && collision.contacts[0].normal.x >= 0)
             {
                 isOnGround = true;
-                canDoubleJump = true;
+                canUsePowerUp = true;
             }
             else if (collision.contacts[0].normal.x < 0)
             {

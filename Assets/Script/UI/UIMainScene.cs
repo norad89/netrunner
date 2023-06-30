@@ -83,10 +83,18 @@ public class UIMainScene : MonoBehaviour
 
     public void UpdatePowerUpCount(int powerUpCount)
     {
-        powerUpText.text = "Double Jumps: " + powerUpCount;
+        if (GameManager.Instance.playerType == "cube")
+        {
+            powerUpText.text = "Double Jumps: " + powerUpCount;
+        }
+        else
+        {
+            powerUpText.text = "Air Dashes: " + powerUpCount;
+        }
     }
 
-    public void UpdateHighScore(int highScore) {
+    public void UpdateHighScore(int highScore)
+    {
         highScoreText.text = "High Score: " + highScore.ToString();
     }
 

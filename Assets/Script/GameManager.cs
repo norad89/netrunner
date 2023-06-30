@@ -31,7 +31,8 @@ public class GameManager : MonoBehaviour
     public float speed = 23f;
     // Power-up variables
     public int powerUpCount = 3;
-    public int powerUpSpawnRate = 10;
+    private int powerUpSpawnRate = 10;
+    private int powerUpType;
     // Score variables
     private int score;
     private int oldHighScore = 0;
@@ -55,6 +56,11 @@ public class GameManager : MonoBehaviour
     public void StartGame(string type)
     {
         playerType = type;
+        if (playerType == "cube") {
+            powerUpType = 0;
+        } else {
+            powerUpType = 1;
+        }
         powerUpCount = 3;
         score = 0;
         UpdateDifficulty(difficulty);
@@ -138,7 +144,7 @@ public class GameManager : MonoBehaviour
                 if (powerUpSpawnChance <= powerUpSpawnRate)
                 {
                     Vector3 randomPowerUpOffset = new Vector3(Random.Range(minSpawnOffsetX, maxSpawnOffsetX), Random.Range(15.0f, 11.0f), 0);
-                    GameObject powerUp = Instantiate(powerUpsPrefabs[0], spawnPos + randomPowerUpOffset, powerUpsPrefabs[0].transform.rotation);
+                    GameObject powerUp = Instantiate(powerUpsPrefabs[powerUpType], spawnPos + randomPowerUpOffset, powerUpsPrefabs[powerUpType].transform.rotation);
                 }
             }
         }
