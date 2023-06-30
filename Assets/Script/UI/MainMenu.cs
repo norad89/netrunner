@@ -9,6 +9,7 @@ public class MainMenu : MonoBehaviour
     public GameObject titleScreen;
     public GameObject difficultyScreen;
     public GameObject creditsScreen;
+    public GameObject playerSelectScreen;
 
     public Button startGameButton;
     public Button selectDifficultyButton;
@@ -16,10 +17,12 @@ public class MainMenu : MonoBehaviour
     public Button easyDifficultyButton;
     public Button mediumDifficultyButton;
     public Button hardDifficultyButton;
+    public Button cubePlayer;
+    public Button spherePlayer;
 
     void Start()
     {
-        startGameButton.onClick.AddListener(StartGame);
+        startGameButton.onClick.AddListener(ShowPlayerSelectScreen);
         selectDifficultyButton.onClick.AddListener(ShowDifficultyScreen);
         creditsButton.onClick.AddListener(ShowCreditsScreen);
         easyDifficultyButton.onClick.AddListener(() => SetDifficulty(1));
@@ -28,12 +31,19 @@ public class MainMenu : MonoBehaviour
         GameManager.Instance.LoadHighScore();
     }
 
-    public void StartGame()
+    public void StartGame(string playerType)
     {
         titleScreen.SetActive(false);
         SceneManager.LoadScene(1);
-        GameManager.Instance.StartGame();
+        GameManager.Instance.StartGame(playerType);
         UIMainScene.Instance.ToggleGameplayUI();
+    }
+
+    public void ShowPlayerSelectScreen() {
+         titleScreen.SetActive(false);
+         playerSelectScreen.SetActive(true);
+         cubePlayer.onClick.AddListener(() => StartGame("cube"));
+         spherePlayer.onClick.AddListener(() => StartGame("sphere"));
     }
 
     public void ShowDifficultyScreen()

@@ -6,7 +6,7 @@ public class PlayerController : MonoBehaviour
 {
     private Rigidbody playerRb;
     public float jumpForce = 1200;
-    public float jumpGravityModifier;
+    public float jumpGravityModifier = 4f;
     public float fallGravityModifier = 3f;
     public bool canDoubleJump = true;
     public bool isOnGround = true;
@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if ((Input.GetKeyDown(KeyCode.Space) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)) && (isOnGround || (canDoubleJump && gameManager.powerUpCount != 0)) && gameManager.isGameActive)
+        if ((Input.GetKeyDown(KeyCode.Space)) && (isOnGround || (canDoubleJump && gameManager.powerUpCount != 0)) && gameManager.isGameActive)
         {
             if (!isOnGround)
             {
@@ -41,7 +41,7 @@ public class PlayerController : MonoBehaviour
             playerRb.velocity += Vector3.up * Physics.gravity.y * (jumpGravityModifier - 1) * Time.deltaTime;
         }
         // gravity push when stop jumping
-        else if (playerRb.velocity.y > 0 && (!Input.GetKey(KeyCode.Space) || Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended))
+        else if (playerRb.velocity.y > 0 && (!Input.GetKey(KeyCode.Space)))
         {
             playerRb.velocity += Vector3.up * Physics.gravity.y * (fallGravityModifier - 1) * Time.deltaTime;
         }
