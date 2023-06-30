@@ -77,7 +77,7 @@ public class PlayerController : MonoBehaviour
             }
             else if (collision.contacts[0].normal.x < 0)
             {
-                gameManager.gameOverBool = true;
+                gameManager.gameOverTriggered = true;
                 gameManager.GameOver();
                 Debug.Log("Game Over - Collisione dal lato sinistro del cubo");
             }
