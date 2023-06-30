@@ -18,25 +18,16 @@ public class PowerUpManager : MonoBehaviour
 
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            if (gameObject.tag == "DoubleJump")
+            if (gameManager.powerUpCount < 3)
             {
-                if (gameManager.powerUpCount < 3)
-                {
-                    gameManager.powerUpCount = gameManager.powerUpCount++;            
-                    UIMainScene.Instance.UpdatePowerUpCount(gameManager.powerUpCount++);
-                }
-                Destroy(gameObject);
+                gameManager.powerUpCount = gameManager.powerUpCount++;
+                UIMainScene.Instance.UpdatePowerUpCount(gameManager.powerUpCount++);
             }
-            else if (gameObject.tag == "DashForward")
-            {
-                // player.canDashForward = true;
-                Destroy(gameObject);
-            }
+            Destroy(gameObject);
         }
-
     }
 }

@@ -1246,6 +1246,7 @@ MonoBehaviour:
   - {fileID: 6914131848378637998, guid: b6728c051989fbe4da47a5d5f70587f8, type: 3}
   powerUpsPrefabs:
   - {fileID: 546643280516847441, guid: e7178bc8a2e417945a72baaa9f4eeaa5, type: 3}
+  - {fileID: 546643280516847441, guid: 9e0ea8d8721f7bf4787603a3ca0fab4c, type: 3}
   player: {fileID: 0}
   startingPlatform: {fileID: 6914131848378637998, guid: b6728c051989fbe4da47a5d5f70587f8, type: 3}
   platformSpawnRate: 0.8
