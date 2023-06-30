@@ -14,6 +14,7 @@ public class UIMainScene : MonoBehaviour
     public TextMeshProUGUI difficultyText;
     public TextMeshProUGUI highScoreText;
     public GameObject gameOverScreen;
+    public string playerType;
 
     public Button restartButton;
     public Button backToMenuButton;
@@ -51,8 +52,9 @@ public class UIMainScene : MonoBehaviour
         scoreText.gameObject.SetActive(showUI);
     }
 
-    public void ShowGameOverScreen()
+    public void ShowGameOverScreen(string type)
     {
+        playerType = type;
         gameOverScreen.gameObject.SetActive(true);
         restartButton.onClick.AddListener(RestartGame);
         GameManager.Instance.isGameActive = false;
@@ -63,7 +65,7 @@ public class UIMainScene : MonoBehaviour
         SceneManager.LoadScene(1);
         Physics.gravity = new Vector3(0, -9.8f, 0);
         gameOverScreen.gameObject.SetActive(false);
-        GameManager.Instance.StartGame();
+        GameManager.Instance.StartGame(playerType);
     }
 
     public void BackToMenu()

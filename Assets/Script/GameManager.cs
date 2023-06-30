@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour
     private bool isFirstSpawn = true;
     private bool isSpawningStarted = false;
     public bool gameOverBool;
+    public string playerType;
     private int score;
     private int oldHighScore = 0;
     public int newHighScore;
@@ -45,8 +46,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void StartGame()
+    public void StartGame(string type)
     {
+        playerType = type;
         powerUpCount = 3;
         score = 0;
         UpdateDifficulty(difficulty);
@@ -56,6 +58,10 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        if (isGameActive) {
+            player = GameObject.FindGameObjectWithTag("Player");
+            startingPlatform = GameObject.FindGameObjectWithTag("StartingPlatform");
+        }
         if (isGameActive && player)
         {
             score = (int)player.transform.position.x;
@@ -78,6 +84,7 @@ public class GameManager : MonoBehaviour
 
     IEnumerator SpawnManager()
     {
+        
         // Initial platform spawn position
         Vector3 previousPlatformPosition = new Vector3(initialSpawnPositionX, 0f, 0f);
 
@@ -177,7 +184,6 @@ public class GameManager : MonoBehaviour
         string json = JsonUtility.ToJson(data);
 
         // Salvare il file JSON nel percorso persistente specifico per la build WebGL
-        // StartCoroutine(SaveFile(path, json));
         SaveFile(path, json);
     }
 
@@ -188,27 +194,7 @@ public class GameManager : MonoBehaviour
         if (File.Exists(path)) {
             File.WriteAllText(path, json);
         }
-        
 
-        // // Creare una richiesta HTTP POST per salvare il file
-        // byte[] bytes = Encoding.UTF8.GetBytes(json);
-        // Debug.Log(bytes);
-        // UnityWebRequest www = UnityWebRequest.Post(path, json);
-
-        // // Impostare il contenuto del messaggio come JSON
-        // www.SetRequestHeader("Content-Type", "application/json");
-
-        // // Allegare i dati JSON alla richiesta
-        // www.uploadHandler = new UploadHandlerRaw(bytes);
-
-        // // Attendere la fine della richiesta
-        // yield return www.SendWebRequest();
-
-        // if (www.result != UnityWebRequest.Result.Success)
-        // {
-        //     // Gestire l'errore di salvataggio del file
-        //     Debug.LogError("Errore durante il salvataggio del file: " + www.error);
-        // }
     }
 
     public void LoadHighScore()
@@ -274,7 +260,7 @@ public class GameManager : MonoBehaviour
         newHighScore = score;
         isGameActive = false;
         isSpawningStarted = false;
-        UIMainScene.Instance.ShowGameOverScreen();
+        UIMainScene.Instance.ShowGameOverScreen(playerType);
         if (newHighScore > oldHighScore)
         {
             SaveHighScore();
