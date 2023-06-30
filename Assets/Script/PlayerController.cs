@@ -13,14 +13,11 @@ public class PlayerController : MonoBehaviour
     public bool canDoubleJump = true;
     public bool isOnGround = true;
     private GameManager gameManager;
-    private BoxCollider boxCollider;
-    private SphereCollider sphereCollider;
+
 
     void Start()
     {
         gameManager = GameManager.Instance;
-        boxCollider = GetComponent<BoxCollider>();
-        sphereCollider = GetComponent<SphereCollider>();
         playerRb = GetComponent<Rigidbody>();
         Physics.gravity *= jumpGravityModifier;
     }
@@ -29,15 +26,11 @@ public class PlayerController : MonoBehaviour
     {
         if (gameManager.playerType == "cube")
         {
-            boxCollider.enabled = true;
-            sphereCollider.enabled = false;
             cubePlayer.SetActive(true);
             spherePlayer.SetActive(false);
         }
         else if (gameManager.playerType == "sphere")
         {
-            sphereCollider.enabled = true;
-            boxCollider.enabled = false;
             cubePlayer.SetActive(false);
             spherePlayer.SetActive(true);
         }
