@@ -15,7 +15,11 @@ public class PowerUpManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource != null)
+        {
+            audioSource.enabled = true;
+        }
     }
 
     public void OnTriggerEnter(Collider other)
